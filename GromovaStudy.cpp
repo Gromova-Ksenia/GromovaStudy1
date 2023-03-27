@@ -2,51 +2,63 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <stdio.h>
-#include <math.h>
 #include <Windows.h>
-#include "my_lib.h"
 using namespace std;
 struct movie {
-    char name[50];
-    char director[20];
-    char genre[20];
+    string name;
+    string director;
+    string genre;
     float rate;
     int price;
 };
 
- /*void real_libruary(FILE* lib) {
-    int size = 5;
+
+movie* read_libruary(movie* ms, int& size) {
+    int i = 0; string tmp;
+    ifstream in("lib.txt");
+    getline(in, tmp);
+    size = stoi(tmp);
     movie* temp = new movie[size];
-    int i = 0;
-    while (!feof(lib)) {
-        fscanf_s(lib, "%s", &temp[i].name, sizeof(temp[i].name));
-        fscanf_s(lib, "%s", &temp[i].director, sizeof(temp[i].director));
-        fscanf_s(lib, "%s", &temp[i].genre, sizeof(temp[i].genre));
-        fscanf_s(lib, "%f", &temp[i].rate, sizeof(temp[i].rate));
-        fscanf_s(lib, "%u", &temp[i].price, sizeof(temp[i].price));
+    while (!in.eof()) {
+        getline(in, temp[i].name);
+        getline(in, temp[i].director);
+        getline(in, temp[i].genre);
+        getline(in, tmp);
+        temp[i].rate = stof(tmp);
+        getline(in, tmp);
+        temp[i].price = stoi(tmp);
         i++;
     }
-}*/
+    delete[] ms;
+    return temp;
+}
 
-void fill_movies(movie* ms) {
-    ms[0] = { "Начало", "Нолан", "Триллер", 9.8, 800 };
-    ms[1] = { "Довод", "Нолан", "Триллер", 9.5, 700 };
-    ms[2] = { "Первому игроку приготовиться", "Спилберг", "Боевик", 7.5, 650 };
-    ms[3] = { "Призрак Оперы", "Шумахер", "Мюзикл", 7.8, 500 };
-    ms[4] = { "Боги хеви-метал", "Соллетт", "Комедия", 7.1, 500 };
+void write_libruary(movie* ms, int size) {
+    ofstream out;
+    out.open("lib.txt");
+    out << size;
+    for (int i = 0; i < size; i++) {
+        out << ms[0].name << endl;
+        out << ms[0].director << endl;
+        out << ms[0].genre << endl;
+        out << ms[0].rate << endl;
+        out << ms[0].price << endl;
+    }
+    out.close();
 }
 
 movie* add_movie(movie* ms, int& size) {
     movie* temp = new movie[size + 1];
     for (int i = 0; i < size; i++) temp[i] = ms[i];
     cout << "Введите название фильма: ";
-    cin.getline(temp[size].name, 50);
+    getline(cin, temp[size].name);
     cout << "Введите режиссёра: ";
-    cin >> temp[size].director;
+    getline(cin, temp[size].director);
     cout << "Введите жанр: ";
-    cin >> temp[size].genre;
+    getline(cin, temp[size].genre);
     cout << "Введите рейтинг: ";
     float temp_rate;
     cin >> temp_rate;
@@ -82,7 +94,7 @@ void name_search(movie* ms, int size) {
     cin.getline(search, 50);
     int count = 0;
     for (int i = 0; i < size; i++) {
-        if (strstr(ms[i].name, search)) {
+        if (ms[i].name.find(search)) {
             count++;
             show_movie(ms, i);
             cout << endl;
@@ -97,7 +109,7 @@ void director_search(movie* ms, int size) {
     cin >> search;
     int count = 0;
     for (int i = 0; i < size; i++) {
-        if (strstr(ms[i].director, search)) {
+        if (ms[i].director.find(search)) {
             count++;
             show_movie(ms, i);
             cout << endl;
@@ -112,7 +124,7 @@ void genre_search(movie* ms, int size) {
     cin >> search;
     int count = 0;
     for (int i = 0; i < size; i++) {
-        if (strstr(ms[i].genre, search)) {
+        if (ms[i].genre.find(search)) {
             count++;
             show_movie(ms, i);
             cout << endl;
@@ -128,7 +140,7 @@ void best_in_genre(movie* ms, int size) {
     float rate = 0;
     float number = 0;
     for (int i = 0; i < size; i++) {
-        if (strstr(ms[i].genre, search)) {
+        if (ms[i].genre.find(search)) {
             if ((ms[i].rate) > rate) {
                 rate = ms[i].rate;
                 cout << "rate=" << rate;
@@ -153,12 +165,10 @@ void main()
     setlocale(LC_ALL, "Russian");
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-    int size = 5;
+    int size = 1;
     movie* movieshop = new movie[size];
-    //FILE* libruary;
 
-    //libruary = fopen("P:/Студенты/РПО211/Gromova/lib.txt", "w+");
-    fill_movies(movieshop);
+    movieshop = read_libruary(movieshop, size);
     uint8_t k = 0;
     do {
         system("cls");
